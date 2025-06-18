@@ -7,7 +7,7 @@ ANTLR_VERSION=4.13.2
 ANTLR_JAR=antlr-$(ANTLR_VERSION)-complete.jar
 ANTLR_URL=https://www.antlr.org/download/$(ANTLR_JAR)
 
-PYTHON_VERSION=3.11
+PYTHON_VERSION=3.12
 
 GRAMMAR_FILES=$(wildcard src/grammar/*.g4)
 
@@ -125,6 +125,9 @@ endif
 		exit 1; \
 	fi
 	@echo "$(GREEN)Python $(PYTHON_VERSION) found at: $(PYTHON_CMD)$(RESET)"
+	@echo "$(YELLOW)Checking if pip is available...$(RESET)"
+	@$(PYTHON_CMD) -m pip --version > /dev/null 2>&1 || (echo "$(RED)Error: pip is not available. Please install pip and try again.$(RESET)" && exit 1)
+	@echo "$(GREEN)pip is available.$(RESET)"
 	@echo "$(YELLOW)Creating virtual environment...$(RESET)"
 	@if [ ! -d "$(VENV_DIR)" ]; then \
 		$(PYTHON_CMD) -m venv $(VENV_DIR); \
@@ -136,6 +139,9 @@ endif
 	@echo "$(BLUE)This may take a moment...$(RESET)"
 	@$(DOWNLOAD_CMD)
 	@echo "$(GREEN)ANTLR downloaded to $(EXTERNAL_DIR)/$(ANTLR_JAR)$(RESET)"
+	@echo "$(YELLOW)Upgrading pip in virtual environment...$(RESET)"
+	@$(VENV_PIP) install --upgrade pip
+	@echo "$(GREEN)pip upgraded successfully.$(RESET)"
 	@echo "$(YELLOW)Installing Python dependencies in virtual environment...$(RESET)"
 	@$(VENV_PIP) install -r requirements.txt
 	@echo "$(GREEN)Python dependencies installed in virtual environment.$(RESET)"
@@ -198,7 +204,7 @@ clean:
 	@find $(CURDIR) -type d -name ".pytest_cache" -exec rm -rf {} +
 	@echo "$(GREEN)Cleaned Python cache files recursively.$(RESET)"
 
-test-lexer: clean setup build
+test-lexer: build
 	@echo "$(YELLOW)Running lexer tests...$(RESET)"
 	$(call RM_CMD,$(REPORT_DIR)/lexer)
 	$(call MKDIR_CMD,$(REPORT_DIR))
@@ -206,7 +212,7 @@ test-lexer: clean setup build
 	@echo "$(GREEN)Lexer tests completed. Reports generated at $(REPORT_DIR)/lexer/index.html$(RESET)"
 	@$(MAKE) clean-cache
 
-test-parser: clean setup build
+test-parser: build
 	@echo "$(YELLOW)Running parser tests...$(RESET)"
 	$(call RM_CMD,$(REPORT_DIR)/parser)
 	$(call MKDIR_CMD,$(REPORT_DIR))

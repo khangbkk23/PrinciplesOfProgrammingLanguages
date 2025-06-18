@@ -2,7 +2,7 @@
 
 A comprehensive compiler implementation for HLang, a simple programming language, using the ANTLR4 parser generator.
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![ANTLR](https://img.shields.io/badge/ANTLR-4.13.2-orange.svg)](https://www.antlr.org/)
 [![License](https://img.shields.io/badge/License-Academic-green.svg)](LICENSE)
 
@@ -51,7 +51,7 @@ The project demonstrates fundamental concepts of compiler construction including
 
 ### Prerequisites
 
-- **Python 3.11+** (recommended) or Python 3.8+
+- **Python 3.12+** (recommended) or Python 3.8+
 - **Java Runtime Environment (JRE) 8+** (required for ANTLR4)
 - **Git** (for cloning the repository)
 
@@ -259,13 +259,13 @@ sudo apt update && sudo apt install openjdk-11-jre
 # Download from: https://www.oracle.com/java/technologies/downloads/
 ```
 
-#### "Python 3.11 not found" error  
+#### "Python 3.12 not found" error  
 ```bash
 # macOS with Homebrew
-brew install python@3.11
+brew install python@3.12
 
 # Ubuntu/Debian  
-sudo apt install python3.11
+sudo apt install python3.12
 
 # Windows
 # Download from: https://www.python.org/downloads/
