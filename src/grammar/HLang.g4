@@ -1,7 +1,7 @@
 grammar HLang;
 
 @lexer::header {
-from .lexererr import *
+from lexererr import *
 }
 
 @lexer::members {

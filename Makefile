@@ -172,26 +172,19 @@ endif
 
 build: $(GRAMMAR_FILES) $(EXTERNAL_DIR)/$(ANTLR_JAR)
 	$(call MKDIR_CMD,$(BUILD_DIR))
-	$(call MKDIR_CMD,$(BUILD_DIR)/src)
-	$(call MKDIR_CMD,$(BUILD_DIR)/src/grammar)
 	@echo "$(YELLOW)Compiling ANTLR grammar files...$(RESET)"
-	java -jar $(EXTERNAL_DIR)/$(ANTLR_JAR) -Dlanguage=Python3 -visitor -no-listener -o $(BUILD_DIR) $(GRAMMAR_FILES)
-	@echo "$(GREEN)ANTLR grammar files compiled to build/$(RESET)"
-	@echo "$(YELLOW)Creating __init__.py files...$(RESET)"
+	@cd src/grammar && java -jar $(EXTERNAL_DIR)/$(ANTLR_JAR) -Dlanguage=Python3 -visitor -no-listener -o $(BUILD_DIR) *.g4
+	@echo "$(YELLOW)Creating __init__.py file...$(RESET)"
 ifeq ($(OS),Windows_NT)
 	@type nul > "$(BUILD_DIR)/__init__.py"
-	@type nul > "$(BUILD_DIR)/src/__init__.py"
-	@type nul > "$(BUILD_DIR)/src/grammar/__init__.py"
 else
 	@touch "$(BUILD_DIR)/__init__.py"
-	@touch "$(BUILD_DIR)/src/__init__.py"
-	@touch "$(BUILD_DIR)/src/grammar/__init__.py"
 endif
-	@echo "$(YELLOW)Copying Python files from src/grammar/ to build/src/grammar/$(RESET)"
+	@echo "$(YELLOW)Copying Python files from src/grammar/ to build/$(RESET)"
 ifeq ($(OS),Windows_NT)
-	@if exist "$(CURDIR)\src\grammar\lexererr.py" copy "$(CURDIR)\src\grammar\lexererr.py" "$(CURDIR)\build\src\grammar\" /Y
+	@if exist "$(CURDIR)\src\grammar\lexererr.py" copy "$(CURDIR)\src\grammar\lexererr.py" "$(CURDIR)\build\" /Y
 else
-	@cp -f "$(CURDIR)/src/grammar/lexererr.py" "$(CURDIR)/build/src/grammar/" 2>/dev/null || :
+	@cp -f "$(CURDIR)/src/grammar/lexererr.py" "$(CURDIR)/build/" 2>/dev/null || :
 endif
 	@echo "$(GREEN)ANTLR grammar files compiled to build/$(RESET)"
 
@@ -214,8 +207,7 @@ clean-venv:
 
 clean:
 	$(call RM_CMD,$(BUILD_DIR))
-	$(call RM_CMD,$(EXTERNAL_DIR))
-	@echo "$(GREEN)Cleaned build and external directories.$(RESET)"
+	@echo "$(GREEN)Cleaned build directories.$(RESET)"
 	@find $(CURDIR) -type d -name "__pycache__" -exec rm -rf {} +
 	@find $(CURDIR) -type f -name "*.pyc" -exec rm -f {} +
 	@find $(CURDIR) -type d -name ".pytest_cache" -exec rm -rf {} +

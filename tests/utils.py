@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'build'))
+
 from antlr4 import *
-from build.src.grammar.HLangLexer import HLangLexer
-from build.src.grammar.HLangParser import HLangParser
+from build.HLangLexer import HLangLexer
+from build.HLangParser import HLangParser
 
 
 class Tokenizer:
