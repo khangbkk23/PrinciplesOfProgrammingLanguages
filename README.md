@@ -72,11 +72,15 @@ The project includes a comprehensive Makefile that supports:
 2. **Check system requirements:**
    ```bash
    make check
+   # OR using the entrypoint script:
+   python3 run.py check
    ```
 
 3. **Set up the environment and install dependencies:**
    ```bash
    make setup
+   # OR using the entrypoint script:
+   python3 run.py setup
    ```
    This command:
    - Creates a Python virtual environment
