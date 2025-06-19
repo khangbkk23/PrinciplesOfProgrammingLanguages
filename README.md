@@ -21,6 +21,7 @@ The project demonstrates fundamental concepts of compiler construction including
 ```
 .
 ├── Makefile              # Cross-platform build automation (Windows, macOS, Linux)
+├── run.py                # Main project entrypoint for build and test operations
 ├── README.md             # Project documentation
 ├── requirements.txt      # Python dependencies
 ├── venv/                 # Python virtual environment (auto-generated)
@@ -82,38 +83,71 @@ The project includes a comprehensive Makefile that supports:
    - Installs required Python packages
    - Downloads ANTLR4 JAR file automatically
 
-4. **Build the compiler:**
+4. **Activate the virtual environment (REQUIRED before building and testing):**
    ```bash
-   make build
+   # On macOS/Linux:
+   source venv/bin/activate
+   
+   # On Windows:
+   venv\Scripts\activate
    ```
 
-5. **Run tests:**
+5. **Build the compiler:**
+   ```bash
+   make build
+   # OR using the entrypoint script:
+   python3 run.py build
+   ```
+
+6. **Run tests:**
    ```bash
    make test-lexer   # Test lexical analysis
    make test-parser  # Test syntax analysis
+   # OR using the entrypoint script:
+   python3 run.py test-lexer
+   python3 run.py test-parser
    ```
 
 ### Available Commands
 
-Get a full list of available commands:
+**Using Makefile (recommended):**
 ```bash
-make help
+make help  # Get a full list of available commands
 ```
 
+**Using run.py entrypoint:**
+```bash
+python3 run.py help         # Get help for run.py commands
+python3 run.py setup        # Setup environment
+python3 run.py build        # Build compiler
+python3 run.py test-lexer   # Test lexer
+python3 run.py test-parser  # Test parser
+python3 run.py clean        # Clean build files
+```
+
+> **⚠️ Important**: Always activate the virtual environment before running build and test commands:
+> ```bash
+> # On macOS/Linux:
+> source venv/bin/activate
+> 
+> # On Windows:
+> venv\Scripts\activate
+> ```
+
 #### Setup & Build Commands
-- `make setup` - Install dependencies and set up environment  
-- `make build` - Compile ANTLR grammar files to Python code
-- `make check` - Verify required tools are installed
+- `make setup` or `python3 run.py setup`- Install dependencies and set up environment  
+- `make build` or `python3 run.py build` - Compile ANTLR grammar files to Python code
+- `make check` or `python3 run.py check`- Verify required tools are installed
 
 #### Testing Commands  
-- `make test-lexer` - Run lexer tests with HTML report generation
-- `make test-parser` - Run parser tests with HTML report generation
+- `make test-lexer` or `python3 run.py test-lexer` - Run lexer tests with HTML report generation
+- `make test-parser` or `python3 run.py test-parser` - Run parser tests with HTML report generation
 
 #### Maintenance Commands
-- `make clean` - Remove build and external directories
-- `make clean-cache` - Clean Python cache files (__pycache__, .pyc)
-- `make clean-reports` - Remove generated test reports
-- `make clean-venv` - Remove virtual environment
+- `make clean` or `python3 run.py clean` - Remove build directories
+- `make clean-cache` or `python3 run.py clean-cache` - Clean Python cache files (__pycache__, .pyc)
+- `make clean-reports` or `python3 run.py clean-reports` - Remove generated test reports
+- `make clean-venv` or `python3 run.py clean-venv` - Remove virtual environment
 
 ## Testing Framework
 
@@ -132,11 +166,19 @@ The project includes a comprehensive testing framework with:
 
 ### Running Tests
 ```bash
+# Activate virtual environment first (REQUIRED)
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+
 # Run lexer tests
 make test-lexer
+# OR
+python3 run.py test-lexer
 
 # Run parser tests  
 make test-parser
+# OR  
+python3 run.py test-parser
 
 # View reports
 open reports/lexer/index.html
@@ -189,7 +231,13 @@ To add new language features:
 
 2. **Rebuild the parser**:
    ```bash
+   # Activate virtual environment first
+   source venv/bin/activate  # macOS/Linux
+   # venv\Scripts\activate   # Windows
+   
    make build
+   # OR
+   python3 run.py build
    ```
 
 3. **Add test cases** in `tests/`:
@@ -202,7 +250,13 @@ To add new language features:
 
 4. **Run tests** to verify:
    ```bash
+   # Activate virtual environment first
+   source venv/bin/activate  # macOS/Linux
+   # venv\Scripts\activate   # Windows
+   
    make test-parser
+   # OR
+   python3 run.py test-parser
    ```
 
 ### Adding New Test Cases
@@ -286,6 +340,10 @@ make build
 # Clean and recreate virtual environment
 make clean-venv
 make setup
+
+# Remember to activate before building/testing
+source venv/bin/activate  # macOS/Linux
+# venv\Scripts\activate   # Windows
 ```
 
 #### Permission errors (Linux/macOS)
@@ -300,6 +358,11 @@ chmod +x Makefile
 2. **View Logs**: Check terminal output for detailed error messages  
 3. **Clean Build**: Try `make clean && make setup && make build`
 4. **Check Java**: Ensure Java is properly installed and in PATH
+5. **Virtual Environment**: Always activate the virtual environment before running build/test commands:
+   ```bash
+   source venv/bin/activate  # macOS/Linux
+   venv\Scripts\activate   # Windows
+   ```
 
 
 ## License
