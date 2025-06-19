@@ -73,6 +73,9 @@ The project includes a comprehensive Makefile that supports:
    ```bash
    make check
    # OR using the entrypoint script:
+   # Windows:
+   python run.py check
+   # macOS/Linux:
    python3 run.py check
    ```
 
@@ -80,6 +83,9 @@ The project includes a comprehensive Makefile that supports:
    ```bash
    make setup
    # OR using the entrypoint script:
+   # Windows:
+   python run.py setup
+   # macOS/Linux:
    python3 run.py setup
    ```
    This command:
