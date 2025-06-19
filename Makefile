@@ -90,15 +90,32 @@ check:
 	@echo ""
 	@echo "$(YELLOW)Checking Java installation...$(RESET)"
 ifeq ($(OS),Windows_NT)
-	@java -version > nul 2>&1 && echo "$(GREEN)✓ Java is installed$(RESET)" || (echo "$(RED)✗ Java is not installed$(RESET)" && echo "$(YELLOW)  Please install Java and try again$(RESET)")
+	@java -version > nul 2>&1 && echo "$(GREEN)✓ Java is installed$(RESET)" || ( \
+		echo "$(RED)✗ Java is not installed$(RESET)" && \
+		echo "$(YELLOW)  Please install Java manually:$(RESET)" && \
+		echo "$(YELLOW)    - Download from https://adoptium.net/ or https://www.oracle.com/java/technologies/downloads/$(RESET)" && \
+		echo "$(YELLOW)    - Or use Chocolatey: choco install openjdk$(RESET)" && \
+		echo "$(YELLOW)  Make sure Java is in your PATH$(RESET)" \
+	)
 else
-	@java -version > /dev/null 2>&1 && echo "$(GREEN)✓ Java is installed$(RESET)" || (echo "$(RED)✗ Java is not installed$(RESET)" && echo "$(YELLOW)  Please install Java and try again$(RESET)")
+	@java -version > /dev/null 2>&1 && echo "$(GREEN)✓ Java is installed$(RESET)" || ( \
+		echo "$(RED)✗ Java is not installed$(RESET)" && \
+		echo "$(YELLOW)  Please install Java manually:$(RESET)" && \
+		echo "$(YELLOW)    - On macOS: brew install openjdk$(RESET)" && \
+		echo "$(YELLOW)    - On Ubuntu/Debian: sudo apt install openjdk-17-jdk$(RESET)" && \
+		echo "$(YELLOW)    - Or download from https://adoptium.net/$(RESET)" && \
+		echo "$(YELLOW)  Make sure Java is in your PATH$(RESET)" \
+	)
 endif
 	@echo ""
 	@echo "$(YELLOW)Checking Python $(PYTHON_VERSION) installation...$(RESET)"
 	@if [ -z "$(PYTHON_CMD)" ]; then \
-		echo "$(RED)✗ Python $(PYTHON_VERSION) is not installed$(RESET)"; \
-		echo "$(YELLOW)  Please install Python $(PYTHON_VERSION) and try again$(RESET)"; \
+		echo "$(RED)✗ Python $(PYTHON_VERSION) is not installed or not found$(RESET)"; \
+		echo "$(YELLOW)  Please install Python $(PYTHON_VERSION) manually:$(RESET)"; \
+		echo "$(YELLOW)    - On macOS: brew install python@$(PYTHON_VERSION)$(RESET)"; \
+		echo "$(YELLOW)    - On Ubuntu/Debian: sudo apt install python$(PYTHON_VERSION) python$(PYTHON_VERSION)-venv python3-pip$(RESET)"; \
+		echo "$(YELLOW)    - On Windows: Download from https://www.python.org/downloads/$(RESET)"; \
+		echo "$(YELLOW)  Or make sure Python $(PYTHON_VERSION) is in your PATH$(RESET)"; \
 	else \
 		echo "$(GREEN)✓ Python $(PYTHON_VERSION) found at: $(PYTHON_CMD)$(RESET)"; \
 	fi
