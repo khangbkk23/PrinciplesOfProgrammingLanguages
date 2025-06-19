@@ -7,6 +7,15 @@ It replaces the Makefile functionality with native Python commands that work
 on Windows, macOS, and Linux.
 
 Usage:
+    # On Windows:
+    python run.py help
+    python run.py setup
+    python run.py build
+    python run.py test-lexer
+    python run.py test-parser
+    python run.py clean
+    
+    # On macOS/Linux:
     python3 run.py help
     python3 run.py setup
     python3 run.py build
@@ -486,7 +495,7 @@ class HLangBuilder:
 
         self.run_command(
             [
-                str(self.venv_python),
+                str(self.venv_python3),
                 "-m",
                 "pytest",
                 "tests/test_lexer.py",
@@ -526,7 +535,7 @@ class HLangBuilder:
 
         self.run_command(
             [
-                str(self.venv_python),
+                str(self.venv_python3),
                 "-m",
                 "pytest",
                 "tests/test_parser.py",

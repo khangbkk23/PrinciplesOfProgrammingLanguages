@@ -100,6 +100,9 @@ The project includes a comprehensive Makefile that supports:
    ```bash
    make build
    # OR using the entrypoint script:
+   # Windows:
+   python run.py build
+   # macOS/Linux:
    python3 run.py build
    ```
 
@@ -108,6 +111,10 @@ The project includes a comprehensive Makefile that supports:
    make test-lexer   # Test lexical analysis
    make test-parser  # Test syntax analysis
    # OR using the entrypoint script:
+   # Windows:
+   python run.py test-lexer
+   python run.py test-parser
+   # macOS/Linux:
    python3 run.py test-lexer
    python3 run.py test-parser
    ```
@@ -121,12 +128,21 @@ make help  # Get a full list of available commands
 
 **Using run.py entrypoint:**
 ```bash
-python3 run.py help         # Get help for run.py commands
-python3 run.py setup        # Setup environment
-python3 run.py build        # Build compiler
-python3 run.py test-lexer   # Test lexer
-python3 run.py test-parser  # Test parser
-python3 run.py clean        # Clean build files
+# Windows:
+python run.py help         # Get help for run.py commands
+python run.py setup        # Setup environment
+python run.py build        # Build compiler
+python run.py test-lexer   # Test lexer
+python run.py test-parser  # Test parser
+python run.py clean        # Clean build files
+
+# macOS/Linux:
+python3 run.py help        # Get help for run.py commands
+python3 run.py setup       # Setup environment
+python3 run.py build       # Build compiler
+python3 run.py test-lexer  # Test lexer
+python3 run.py test-parser # Test parser
+python3 run.py clean       # Clean build files
 ```
 
 > **⚠️ Important**: Always activate the virtual environment before running build and test commands:
@@ -139,19 +155,19 @@ python3 run.py clean        # Clean build files
 > ```
 
 #### Setup & Build Commands
-- `make setup` or `python3 run.py setup`- Install dependencies and set up environment  
-- `make build` or `python3 run.py build` - Compile ANTLR grammar files to Python code
-- `make check` or `python3 run.py check`- Verify required tools are installed
+- `make setup` or `python run.py setup` (Windows) / `python3 run.py setup` (macOS/Linux) - Install dependencies and set up environment  
+- `make build` or `python run.py build` (Windows) / `python3 run.py build` (macOS/Linux) - Compile ANTLR grammar files to Python code
+- `make check` or `python run.py check` (Windows) / `python3 run.py check` (macOS/Linux) - Verify required tools are installed
 
 #### Testing Commands  
-- `make test-lexer` or `python3 run.py test-lexer` - Run lexer tests with HTML report generation
-- `make test-parser` or `python3 run.py test-parser` - Run parser tests with HTML report generation
+- `make test-lexer` or `python run.py test-lexer` (Windows) / `python3 run.py test-lexer` (macOS/Linux) - Run lexer tests with HTML report generation
+- `make test-parser` or `python run.py test-parser` (Windows) / `python3 run.py test-parser` (macOS/Linux) - Run parser tests with HTML report generation
 
 #### Maintenance Commands
-- `make clean` or `python3 run.py clean` - Remove build directories
-- `make clean-cache` or `python3 run.py clean-cache` - Clean Python cache files (__pycache__, .pyc)
-- `make clean-reports` or `python3 run.py clean-reports` - Remove generated test reports
-- `make clean-venv` or `python3 run.py clean-venv` - Remove virtual environment
+- `make clean` or `python run.py clean` (Windows) / `python3 run.py clean` (macOS/Linux) - Remove build directories
+- `make clean-cache` or `python run.py clean-cache` (Windows) / `python3 run.py clean-cache` (macOS/Linux) - Clean Python cache files (__pycache__, .pyc)
+- `make clean-reports` or `python run.py clean-reports` (Windows) / `python3 run.py clean-reports` (macOS/Linux) - Remove generated test reports
+- `make clean-venv` or `python run.py clean-venv` (Windows) / `python3 run.py clean-venv` (macOS/Linux) - Remove virtual environment
 
 ## Testing Framework
 
@@ -177,16 +193,31 @@ venv\Scripts\activate     # Windows
 # Run lexer tests
 make test-lexer
 # OR
+# Windows:
+python run.py test-lexer
+# macOS/Linux:
 python3 run.py test-lexer
 
 # Run parser tests  
 make test-parser
 # OR  
+# Windows:
+python run.py test-parser
+# macOS/Linux:
 python3 run.py test-parser
 
 # View reports
+# Windows:
+start reports/lexer/index.html
+start reports/parser/index.html
+
+# macOS:
 open reports/lexer/index.html
 open reports/parser/index.html
+
+# Linux:
+xdg-open reports/lexer/index.html
+xdg-open reports/parser/index.html
 ```
 
 ### Test Report Features
@@ -241,6 +272,9 @@ To add new language features:
    
    make build
    # OR
+   # Windows:
+   python run.py build
+   # macOS/Linux:
    python3 run.py build
    ```
 
@@ -260,6 +294,9 @@ To add new language features:
    
    make test-parser
    # OR
+   # Windows:
+   python run.py test-parser
+   # macOS/Linux:
    python3 run.py test-parser
    ```
 
