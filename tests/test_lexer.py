@@ -81,5 +81,5 @@ def test_009b():
 def test_010():
     """Test operators and separators"""
     source = "+ - * / % == != < <= > >= && || ! = -> >> ( ) [ ] { } , ; :"
-    expected = "+,-,*,/,%,==,!=,<,<=,>,>=,&&,||,!,=,->,>>,],[,],{,},,;,:,EOF"
+    expected = "+,-,*,/,%,==,!=,<,<=,>,>=,&&,||,!,=,->,>>,(,),[,],{,},,,;,:,EOF"
     assert Tokenizer(source).get_tokens_as_string() == expected

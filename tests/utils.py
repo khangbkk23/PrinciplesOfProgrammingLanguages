@@ -26,15 +26,19 @@ class Tokenizer:
 
     def get_tokens_as_string(self):
         tokens = []
-        token = self.lexer.nextToken()
-        while token.type != Token.EOF:
-            tokens.append(token.text)
-            try:
+        try:
+            while True:
                 token = self.lexer.nextToken()
-            except Exception as e:
+                if token.type == Token.EOF:
+                    tokens.append("EOF")
+                    break
+                tokens.append(token.text)
+        except Exception as e:
+            if tokens:  # If we already have some tokens, append error
                 tokens.append(str(e))
-                return ",".join(tokens)
-        return ",".join(tokens + ["EOF"])
+            else:  # If no tokens yet, just return error
+                return str(e)
+        return ",".join(tokens)
 
 
 class Parser:
