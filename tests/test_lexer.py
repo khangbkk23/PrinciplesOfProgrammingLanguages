@@ -60,7 +60,21 @@ def test_008():
 def test_009():
     """Test valid string literals with escape sequences"""
     source = '"Hello World" "Line 1\\nLine 2" "Quote: \\"text\\""'
-    expected = '"Hello World","Line 1\\nLine 2","Quote: \\"text\\"",EOF'
+    expected = "Hello World,Line 1\\nLine 2,Quote: \\\"text\\\",EOF"
+    assert Tokenizer(source).get_tokens_as_string() == expected
+
+
+def test_009a():
+    """Test string literals return content without quotes"""
+    source = '"Hello World"'
+    expected = "Hello World,EOF"
+    assert Tokenizer(source).get_tokens_as_string() == expected
+
+
+def test_009b():
+    """Test empty string literal"""
+    source = '""'
+    expected = ",EOF"  # Empty string content
     assert Tokenizer(source).get_tokens_as_string() == expected
 
 

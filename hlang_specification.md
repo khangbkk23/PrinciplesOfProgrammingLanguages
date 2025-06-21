@@ -284,8 +284,16 @@ Examples: true, false
 ```
 
 **String literals:** String literals in HLang are sequences of ASCII characters enclosed in double quotes ("). A string literal can contain any ASCII character (codes 0-127) except for unescaped double quotes and backslashes, which must be represented using escape sequences. The string content between the quotes can be empty, forming an empty string. Non-ASCII characters are not supported and will result in lexical errors.
+
+**Lexical Token Representation:** When tokenized, string literals return only the content between the quotes, without the enclosing double quotes. Escape sequences within the string content are preserved as-is in the token representation.
+
 ```hlang
-Examples: "Hello World", "Line 1\nLine 2", "Quote: \"text\"", "", "ASCII symbols: !@#$%^&*()"
+Examples: 
+- "Hello World" → token: Hello World
+- "Line 1\nLine 2" → token: Line 1\nLine 2  
+- "Quote: \"text\"" → token: Quote: \"text\"
+- "" → token: (empty string)
+- "ASCII symbols: !@#$%^&*()" → token: ASCII symbols: !@#$%^&*()
 ```
 
 **Supported escape sequences:**
@@ -302,6 +310,7 @@ Examples: "Hello World", "Line 1\nLine 2", "Quote: \"text\"", "", "ASCII symbols
 - Non-printable ASCII characters (codes 0-31, 127) must use escape sequences where available
 - Extended ASCII (codes 128-255) and Unicode characters are not supported
 - Invalid characters result in lexical errors during compilation
+- **Tokenization:** The lexer returns only the string content without the enclosing quotes
 
 **Array literals:** Array literals in HLang are homogeneous collections represented as comma-separated values enclosed in square brackets ([ ]). The elements within an array literal must be of the same type, and the array can contain zero or more elements. When the array is empty, the type must be inferrable from context or explicitly specified.
 ```hlang
@@ -348,7 +357,7 @@ Local variables can omit type annotations when the type can be inferred from the
 let x = 42;                    // Inferred as int
 let y = 3.14;                  // Inferred as float
 let z = true;                  // Inferred as bool
-let s = "hello";               // Inferred as string
+let s = "hello";               // Inferred as string (literal tokenizes as: hello)
 let arr = [1, 2, 3];           // Inferred as [int; 3]
 ```
 
@@ -490,7 +499,7 @@ Primary expressions are the basic building blocks of all expressions in HLang:
 42          // Integer literal
 3.14        // Float literal  
 true        // Boolean literal
-"hello"     // String literal
+"hello"     // String literal (tokenizes as: hello)
 [1, 2, 3]   // Array literal
 ```
 
