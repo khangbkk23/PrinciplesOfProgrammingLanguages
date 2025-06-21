@@ -57,7 +57,7 @@ else
     RESET=\033[0m
 endif
 
-.PHONY: help check setup build clean clean-cache clean-reports test-lexer test-parser clean-venv
+.PHONY: help check setup build clean clean-cache clean-reports test-lexer test-parser test-ast clean-venv
 
 # Default target - show help
 help:
@@ -71,6 +71,7 @@ help:
 	@echo "$(GREEN)Testing:$(RESET)"
 	@echo "  $(YELLOW)make test-lexer$(RESET)  - Run lexer tests and generate reports"
 	@echo "  $(YELLOW)make test-parser$(RESET) - Run parser tests and generate reports"
+	@echo "  $(YELLOW)make test-ast$(RESET)    - Run AST generation tests and generate reports"
 	@echo ""
 	@echo "$(GREEN)Cleaning:$(RESET)"
 	@echo "  $(YELLOW)make clean$(RESET)         - Clean build and external directories"
@@ -227,6 +228,14 @@ test-parser: build
 	$(call MKDIR_CMD,$(REPORT_DIR))
 	@PYTHONPATH=$(CURDIR) $(VENV_PYTHON) -m pytest tests/test_parser.py --html=$(REPORT_DIR)/parser/index.html --timeout=3 --self-contained-html || true
 	@echo "$(GREEN)Parser tests completed. Reports generated at $(REPORT_DIR)/parser/index.html$(RESET)"
+	@$(MAKE) clean-cache
+
+test-ast: build
+	@echo "$(YELLOW)Running AST generation tests...$(RESET)"
+	$(call RM_CMD,$(REPORT_DIR)/ast)
+	$(call MKDIR_CMD,$(REPORT_DIR))
+	@PYTHONPATH=$(CURDIR) $(VENV_PYTHON) -m pytest tests/test_ast_gen.py --html=$(REPORT_DIR)/ast/index.html --timeout=3 --self-contained-html || true
+	@echo "$(GREEN)AST generation tests completed. Reports generated at $(REPORT_DIR)/ast/index.html$(RESET)"
 	@$(MAKE) clean-cache
 
 # Function to find Python version

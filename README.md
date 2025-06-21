@@ -59,6 +59,42 @@ For lexical errors, the lexer must return the following tokens with specific lex
 - **Test Coverage**: Quantity and quality of test cases (200 tests total)
 - **Error Handling**: Capability to handle lexical and syntax errors
 
+## Assignment 2 - AST Generation
+
+### Required Tasks to Complete
+
+1. **Study the AST Node Structure**
+   - Read carefully all node classes in `src/utils/nodes.py`
+   - Understand the AST node hierarchy and their properties
+   - Master how different language constructs map to AST nodes
+
+2. **Implement the ASTGeneration Class**
+   - Create a class `ASTGeneration` in `src/astgen/ast_generation.py`
+   - Inherit from `HLangVisitor` (generated from ANTLR4)
+   - Override visitor methods to construct appropriate AST nodes
+   - Handle all language constructs defined in the HLang specification
+
+3. **Write 100 AST Generation Test Cases**
+   - Implement **100 test cases** in `tests/test_ast_gen.py`
+   - Test AST generation for all language features
+   - Verify correct node types and structure
+   - Test edge cases and complex nested structures
+
+### AST Generation Requirements
+
+The `ASTGeneration` class must:
+- **Inherit from HLangVisitor**: Use the visitor pattern to traverse parse trees
+- **Return AST nodes**: Each visit method should return appropriate node objects from `nodes.py`
+- **Handle all constructs**: Support all language features defined in the grammar
+- **Maintain structure**: Preserve the logical structure and relationships between language elements
+
+### Evaluation Criteria
+
+- **AST Implementation**: Correctness and completeness of the `ASTGeneration` class
+- **Node Usage**: Proper utilization of node classes from `nodes.py`
+- **Test Coverage**: Quality and comprehensiveness of 100 AST generation test cases
+- **Structure Accuracy**: AST must correctly represent the source program structure
+
 ---
 
 ## Project Structure
@@ -81,12 +117,21 @@ For lexical errors, the lexer must return the following tokens with specific lex
 │   └── antlr-4.13.2-complete.jar # ANTLR4 tool
 ├── reports/              # Automated test reports (HTML format)
 │   ├── lexer/            # Lexer test reports with coverage
-│   └── parser/           # Parser test reports with coverage
+│   ├── parser/           # Parser test reports with coverage
+│   └── ast/              # AST generation test reports with coverage
 ├── src/                  # Source code
+│   ├── astgen/           # AST generation module
+│   │   ├── __init__.py   # Package initialization
+│   │   └── ast_generation.py # ASTGeneration class implementation
+│   ├── utils/            # Utility modules
+│   │   ├── __init__.py   # Package initialization  
+│   │   ├── nodes.py      # AST node class definitions
+│   │   └── visitor.py    # Base visitor classes
 │   └── grammar/          # Grammar definitions
 │       ├── HLang.g4      # ANTLR4 grammar specification
 │       └── lexererr.py   # Custom lexer error classes
 └── tests/                # Comprehensive test suite
+    ├── test_ast_gen.py   # AST generation tests
     ├── test_lexer.py     # Lexer functionality tests
     ├── test_parser.py    # Parser functionality tests
     └── utils.py          # Testing utilities and helper classes
@@ -161,13 +206,16 @@ The project includes a comprehensive Makefile that supports:
    ```bash
    make test-lexer   # Test lexical analysis
    make test-parser  # Test syntax analysis
+   make test-ast     # Test AST generation
    # OR using the entrypoint script:
    # Windows:
    python run.py test-lexer
    python run.py test-parser
+   python run.py test-ast
    # macOS/Linux:
    python3 run.py test-lexer
    python3 run.py test-parser
+   python3 run.py test-ast
    ```
 
 ### Available Commands
@@ -185,6 +233,7 @@ python run.py setup        # Setup environment
 python run.py build        # Build compiler
 python run.py test-lexer   # Test lexer
 python run.py test-parser  # Test parser
+python run.py test-ast     # Test AST generation
 python run.py clean        # Clean build files
 
 # macOS/Linux:
@@ -193,6 +242,7 @@ python3 run.py setup       # Setup environment
 python3 run.py build       # Build compiler
 python3 run.py test-lexer  # Test lexer
 python3 run.py test-parser # Test parser
+python3 run.py test-ast    # Test AST generation
 python3 run.py clean       # Clean build files
 ```
 
@@ -213,6 +263,7 @@ python3 run.py clean       # Clean build files
 #### Testing Commands  
 - `make test-lexer` or `python run.py test-lexer` (Windows) / `python3 run.py test-lexer` (macOS/Linux) - Run lexer tests with HTML report generation
 - `make test-parser` or `python run.py test-parser` (Windows) / `python3 run.py test-parser` (macOS/Linux) - Run parser tests with HTML report generation
+- `make test-ast` or `python run.py test-ast` (Windows) / `python3 run.py test-ast` (macOS/Linux) - Run AST generation tests with HTML report generation
 
 #### Maintenance Commands
 - `make clean` or `python run.py clean` (Windows) / `python3 run.py clean` (macOS/Linux) - Remove build directories
@@ -232,7 +283,8 @@ The project includes a comprehensive testing framework with:
 
 ### Test Files
 - `tests/test_lexer.py` - Lexical analysis tests
-- `tests/test_parser.py` - Syntax analysis tests  
+- `tests/test_parser.py` - Syntax analysis tests
+- `tests/test_ast_gen.py` - AST generation tests
 - `tests/utils.py` - Testing utilities and helper classes
 
 ### Running Tests
@@ -257,18 +309,29 @@ python run.py test-parser
 # macOS/Linux:
 python3 run.py test-parser
 
+# Run AST generation tests
+make test-ast
+# OR
+# Windows:
+python run.py test-ast
+# macOS/Linux:
+python3 run.py test-ast
+
 # View reports
 # Windows:
 start reports/lexer/index.html
 start reports/parser/index.html
+start reports/ast/index.html
 
 # macOS:
 open reports/lexer/index.html
 open reports/parser/index.html
+open reports/ast/index.html
 
 # Linux:
 xdg-open reports/lexer/index.html
 xdg-open reports/parser/index.html
+xdg-open reports/ast/index.html
 ```
 
 ### Test Report Features
@@ -295,7 +358,9 @@ Syntax Analysis (HLangParser)
     ↓
 Parse Tree
     ↓
-[Future: AST Generation]
+AST Generation (ASTGeneration) ← Assignment 2
+    ↓
+Abstract Syntax Tree (AST)
     ↓
 [Future: Semantic Analysis]
     ↓

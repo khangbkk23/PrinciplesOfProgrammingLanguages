@@ -1,10 +1,13 @@
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'build'))
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "build"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "src"))
 
 from antlr4 import *
 from build.HLangLexer import HLangLexer
 from build.HLangParser import HLangParser
+from src.astgen.ast_generation import ASTGeneration
 
 
 class Tokenizer:
@@ -54,3 +57,27 @@ class Parser:
             return "success"
         except Exception as e:
             return str(e)
+
+
+class ASTGenerator:
+    """Class to generate AST from HLang source code."""
+
+    def __init__(self, input_string):
+        self.input_string = input_string
+        self.input_stream = InputStream(input_string)
+        self.lexer = HLangLexer(self.input_stream)
+        self.token_stream = CommonTokenStream(self.lexer)
+        self.parser = HLangParser(self.token_stream)
+        self.ast_generator = ASTGeneration()
+
+    def generate(self):
+        """Generate AST from the input string."""
+        try:
+            # Parse the program starting from the entry point
+            parse_tree = self.parser.program()
+
+            # Generate AST using the visitor
+            ast = self.ast_generator.visit(parse_tree)
+            return ast
+        except Exception as e:
+            return f"AST Generation Error: {str(e)}"
