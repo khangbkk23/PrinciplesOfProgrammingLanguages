@@ -58,26 +58,178 @@ func main() -> void {
 ## Lexical Structure
 
 ### Character Set
-HLang programs use UTF-8 encoding. Whitespace characters include:
-- Space (`' '`)
-- Tab (`'\t'`)
-- Carriage return (`'\r'`)
-- Newline (`'\n'`)
+
+HLang programs are written using the ASCII character set (7-bit encoding, characters 0-127). This design choice ensures maximum compatibility across different systems and simplifies the lexical analysis phase of compilation.
+
+**Supported Character Categories:**
+
+**ASCII Letters:** `A-Z`, `a-z` (codes 65-90, 97-122)
+- Used for keywords, identifiers, and operators
+- Case-sensitive throughout the language
+- Form the basis of all language constructs
+
+**ASCII Digits:** `0-9` (codes 48-57)
+- Used in numeric literals (integers and floats)
+- Used in identifiers (but not as the first character)
+- Support for all decimal digits
+
+**Whitespace Characters:**
+HLang recognizes the following ASCII whitespace characters for token separation:
+
+| Character | ASCII Code | Escape Sequence | Description |
+|-----------|------------|-----------------|-------------|
+| Space | 32 | `' '` | Standard space character |
+| Horizontal Tab | 9 | `'\t'` | Tab character for indentation |
+| Carriage Return | 13 | `'\r'` | Return character (line ending) |
+| Newline | 10 | `'\n'` | Line feed character (line ending) |
+
+**Line Ending Conventions:**
+- **Unix/Linux/macOS:** `\n` (LF)
+- **Windows:** `\r\n` (CRLF)
+- **Classic Mac:** `\r` (CR)
+- All line ending conventions are automatically recognized and handled
+
+**Printable ASCII Characters:**
+All printable ASCII characters (codes 32-126) are supported:
+```
+ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+```
+
+**Special Characters in HLang:**
+The following ASCII characters have special meanings:
+- **Operators:** `+ - * / % == != < <= > >= && || ! = >>`
+- **Separators:** `( ) [ ] { } , ; . :`
+- **String delimiters:** `"`
+- **Comment markers:** `// /* */`
+
+**Character Classification Examples:**
+```hlang
+// Valid ASCII identifiers
+let myVariable = 42;
+let _internal = true;
+let counter123 = 0;
+
+// ASCII-only string literals
+let greeting = "Hello, World!";
+let symbols = "Special chars: !@#$%^&*()";
+
+// ASCII-only comments
+// This is a valid ASCII comment
+/* Block comment with ASCII characters only */
+
+// Error: Non-ASCII characters not supported
+// let café = "Invalid";  // Compile error: non-ASCII in identifier
+// let msg = "Café";      // Compile error: non-ASCII in string
+```
+
+**Source File Requirements:**
+- Source files must contain only ASCII characters (0-127)
+- Files should be saved with ASCII or UTF-8 encoding (UTF-8 for ASCII compatibility)
+- BOM (Byte Order Mark) is not required and should be avoided
+- Files containing characters with codes > 127 will be rejected during lexical analysis
 
 ### Comments
-HLang supports two types of comments:
 
-**Line comments:** Start with `//` and continue to end of line
+HLang provides comprehensive commenting capabilities to support code documentation and temporary code disabling. Comments are completely ignored during lexical analysis and do not affect program execution.
+
+**Line Comments (`//`):**
+
+Line comments begin with two forward slashes (`//`) and continue until the end of the current line. They are ideal for brief explanations and end-of-line documentation.
+
+**Syntax:** `// comment text`
+
+**Characteristics:**
+- Start with `//` (two consecutive forward slashes)
+- Continue until the end of the current line
+- Line ending terminates the comment (any of `\n`, `\r\n`, or `\r`)
+- Can appear on their own line or at the end of a code line
+- Cannot span multiple lines
+- Nested `//` has no special meaning within line comments
+
+**Examples:**
 ```hlang
-// This is a line comment
+// This is a complete line comment
+let x = 42;        // End-of-line comment explaining variable
+
+// Multiple single-line comments
+// can be used to create
+// multi-line documentation
+
+func factorial(n: int) -> int {
+    // Base case: factorial of 0 or 1 is 1
+    if (n <= 1) {
+        return 1;   // Return base case value
+    }
+    // Recursive case: n! = n * (n-1)!
+    return n * factorial(n - 1);
+}
+
+// Commenting out code for debugging
+// let debugValue = computeExpensiveOperation();
+let result = simpleOperation();
 ```
 
-**Block comments:** Enclosed by `/*` and `*/`, can be nested
+**Block Comments (`/* */`):**
+
+Block comments are enclosed between `/*` and `*/` delimiters and can span multiple lines. They support nesting, making them excellent for temporarily disabling code sections and creating detailed documentation blocks.
+
+**Syntax:** `/* comment content */`
+
+**Characteristics:**
+- Begin with `/*` (forward slash followed by asterisk)
+- End with `*/` (asterisk followed by forward slash)
+- Can span multiple lines
+- Can appear anywhere whitespace is allowed
+- Support nesting (inner `/* */` pairs are properly handled)
+- Useful for large documentation blocks and code disabling
+
+**Nesting Rules:**
+- Each `/*` must be matched with a corresponding `*/`
+- Nesting depth is tracked during lexical analysis
+- Inner comments are properly nested: `/* outer /* inner */ still outer */`
+- Mismatched delimiters result in lexical errors
+
+**Examples:**
 ```hlang
-/* This is a block comment
-   /* Nested comments are allowed */
-   End of block comment */
+/*
+ * Multi-line block comment
+ * describing the following function
+ * Author: John Doe
+ * Date: June 2025
+ */
+func complexCalculation(data: [int; 10]) -> float {
+    /* This algorithm implements the
+       advanced mathematical formula
+       discovered by Smith et al. */
+    
+    let result = 0.0;
+    /* Loop through all elements */ for (item in data) {
+        result = result + float(item);
+    }
+    return result / 10.0;  /* Calculate average */
+}
+
+/* Nested comments example */
+/*
+ * Outer comment begins here
+ * /* Inner comment can contain code:
+ *    let x = 42;
+ *    let y = x * 2;
+ * */ 
+ * Outer comment continues after inner ends
+ */
+
+/* Temporarily disable entire function
+func debugFunction() -> void {
+    print("Debug output");
+    /* Even nested comments work here
+       let temp = calculate();
+    */
+}
+*/
 ```
+
+
 
 ### Tokens
 
@@ -131,19 +283,25 @@ Examples: 3.14, -2.5, 0.0, 42., .5, 1.23e10, -4.56E-3, 0.0e0
 Examples: true, false
 ```
 
-**String literals:** String literals in HLang are sequences of characters enclosed in double quotes ("). A string literal can contain any Unicode character except for unescaped double quotes and backslashes, which must be represented using escape sequences. The string content between the quotes can be empty, forming an empty string.
+**String literals:** String literals in HLang are sequences of ASCII characters enclosed in double quotes ("). A string literal can contain any ASCII character (codes 0-127) except for unescaped double quotes and backslashes, which must be represented using escape sequences. The string content between the quotes can be empty, forming an empty string. Non-ASCII characters are not supported and will result in lexical errors.
 ```hlang
-Examples: "Hello World", "Line 1\nLine 2", "Quote: \"text\"", "", "Unicode: 你好"
+Examples: "Hello World", "Line 1\nLine 2", "Quote: \"text\"", "", "ASCII symbols: !@#$%^&*()"
 ```
 
 **Supported escape sequences:**
-| Sequence | Description |
-|----------|-------------|
-| `\n` | newline character |
-| `\t` | horizontal tab character |
-| `\r` | carriage return character |
-| `\\` | backslash character |
-| `\"` | double quote character |
+| Sequence | ASCII Code | Description |
+|----------|------------|-------------|
+| `\n` | 10 | newline character (LF) |
+| `\t` | 9 | horizontal tab character |
+| `\r` | 13 | carriage return character |
+| `\\` | 92 | backslash character |
+| `\"` | 34 | double quote character |
+
+**String Content Restrictions:**
+- Only ASCII characters (codes 0-127) are allowed
+- Non-printable ASCII characters (codes 0-31, 127) must use escape sequences where available
+- Extended ASCII (codes 128-255) and Unicode characters are not supported
+- Invalid characters result in lexical errors during compilation
 
 **Array literals:** Array literals in HLang are homogeneous collections represented as comma-separated values enclosed in square brackets ([ ]). The elements within an array literal must be of the same type, and the array can contain zero or more elements. When the array is empty, the type must be inferrable from context or explicitly specified.
 ```hlang
