@@ -275,7 +275,7 @@ Examples: 42, -17, 0, 007, -0
 
 **Float literals:** All numbers with decimal points in HLang are considered as 64-bit floating-point numbers, just as double precision floating-point numbers in C/C++. A HLang float literal consists of an integer part, a decimal part, and an optional exponent part. The integer part is a sequence of one or more digits. The decimal part is a decimal point (.) followed by zero or more digits. The exponent part starts with the character 'e' or 'E' followed by an optional '+' or '-' sign, and then one or more digits. The decimal part is mandatory for float literals, but the fractional digits after the decimal point can be omitted. The exponent part can be omitted. An optional minus sign (-) can precede the entire literal for negative values.
 ```hlang
-Examples: 3.14, -2.5, 0.0, 42., .5, 1.23e10, -4.56E-3, 0.0e0
+Examples: 3.14, -2.5, 0.0, 42., 5., 1.23e10, -4.56E-3, 0.0e0
 ```
 
 **Boolean literals:** Boolean values in HLang are represented by exactly two keywords: `true` and `false`. These are case-sensitive and cannot be abbreviated or modified.
