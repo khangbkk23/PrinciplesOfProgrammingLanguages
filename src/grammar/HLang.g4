@@ -24,29 +24,7 @@ options{
 	language=Python3;
 }
 
-program  : decl+ EOF ;
-
-decl: funcdecl | vardecl  ;
-
-vardecl: 'var' ID 'int' ('=' exp)? ';' ;
-
-funcdecl: 'func' ID '(' ')' block ';' ;
-
-block : '{' stmt+  '}' ;
-
-stmt: funcall | vardecl;
-
-funcall: ID '(' exp ')' ';' ;
-
-exp:  ID | INTLIT | FLOATLIT;
-
-ID: [a-zA-Z]+;
-
-INTLIT: [0-9]+;
-
-FLOATLIT: [0-9]+ '.' [0-9]+;
-
-NL: '\n' -> skip; //skip newlines
+program:  EOF;
 
 WS : [ \t\r]+ -> skip ; // skip spaces, tabs 
 

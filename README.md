@@ -10,6 +10,8 @@ A comprehensive compiler implementation for HLang, a simple programming language
 
 This is a mini project for the **Principle of Programming Languages course (CO3005)** at Ho Chi Minh City University of Technology (VNU-HCM) that implements a compiler for **HLang**, a custom programming language designed for educational purposes.
 
+📋 **For detailed language specification, see [HLang Specification](hlang_specification.md)**
+
 The project demonstrates fundamental concepts of compiler construction including:
 - **Lexical Analysis**: Tokenization and error handling for invalid characters, unclosed strings, and illegal escape sequences
 - **Syntax Analysis**: Grammar-based parsing using ANTLR4 (ANother Tool for Language Recognition)
