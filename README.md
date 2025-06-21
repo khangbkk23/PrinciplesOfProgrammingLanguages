@@ -18,6 +18,49 @@ The project demonstrates fundamental concepts of compiler construction including
 - **Error Handling**: Comprehensive error reporting for both lexical and syntactic errors
 - **Testing Framework**: Automated testing with HTML report generation
 
+## Assignment 1 - Tokenizer and recognizer
+
+### Required Tasks to Complete
+
+1. **Read the language specification carefully**
+   - Study the detailed [HLang Specification](hlang_specification.md) document
+   - Understand the syntax and semantics of the HLang language
+   - Master the lexical and syntax rules
+
+2. **Implement the HLang.g4 file**
+   - Complete the ANTLR4 grammar file in `src/grammar/HLang.g4`
+   - Define lexical rules (tokens)
+   - Define parser rules (grammar rules)
+   - Handle precedence and associativity
+
+3. **Write 100 lexer tests and 100 parser tests**
+   - **100 test cases for lexer** in `tests/test_lexer.py`
+     - Test valid and invalid tokens
+     - Test error handling (unclosed strings, illegal escape sequences, etc.)
+     - Test edge cases and boundary conditions
+   - **100 test cases for parser** in `tests/test_parser.py`
+     - Test valid grammar structures
+     - Test syntax errors and error recovery
+     - Test nested structures and complex expressions
+
+### Lexical Error Handling Requirements
+
+For lexical errors, the lexer must return the following tokens with specific lexemes:
+
+- **ERROR_TOKEN** with `<unrecognized char>` lexeme: when the lexer detects an unrecognized character.
+
+- **UNCLOSE_STRING** with `<unclosed string>` lexeme: when the lexer detects an unterminated string. The `<unclosed string>` lexeme does not include the opening quote.
+
+- **ILLEGAL_ESCAPE** with `<wrong string>` lexeme: when the lexer detects an illegal escape in string. The wrong string is from the beginning of the string (without the opening quote) to the illegal escape.
+
+### Evaluation Criteria
+
+- **Grammar Implementation**: Accuracy and completeness of the `HLang.g4` file
+- **Test Coverage**: Quantity and quality of test cases (200 tests total)
+- **Error Handling**: Capability to handle lexical and syntax errors
+
+---
+
 ## Project Structure
 
 ```
