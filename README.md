@@ -95,6 +95,39 @@ The `ASTGeneration` class must:
 - **Test Coverage**: Quality and comprehensiveness of 100 AST generation test cases
 - **Structure Accuracy**: AST must correctly represent the source program structure
 
+## Assignment 3 - Static Semantic Analysis
+
+### Required Tasks to Complete
+
+1. **Study Semantic Constraints and Error Types**
+   - Read carefully all semantic rules in `semantic_constraints_and_errors.md`
+   - Understand the comprehensive error detection requirements
+   - Master the type system and scope management rules
+
+2. **Implement the Static Checker**
+   - Create a class `StaticChecker` in `src/semantics/static_checker.py`
+   - Inherit from `ASTVisitor` for traversing AST nodes
+   - Implement comprehensive semantic analysis for all language features
+   - Handle scope management, type checking, and error detection
+
+3. **Write 100 Static Checker Test Cases**
+   - Implement **100 test cases** in `tests/test_checker.py`
+   - Test all semantic error types and valid programs
+   - Cover edge cases and complex semantic scenarios
+   - Verify correct error messages and program validation
+
+### Semantic Analysis Requirements
+
+📋 **For detailed semantic constraints, see [Semantic Constraints and Errors](semantic_constraints_and_errors.md)**
+
+### Evaluation Criteria
+
+- **Semantic Analysis**: Correctness and completeness of the `StaticChecker` implementation
+- **Error Detection**: Accurate identification of all required error types
+- **Test Coverage**: Quality and comprehensiveness of 100 semantic checker test cases
+- **Type System**: Proper implementation of HLang's static type system
+- **Scope Management**: Correct handling of variable and function scope rules
+
 ---
 
 ## Project Structure
@@ -118,11 +151,16 @@ The `ASTGeneration` class must:
 ├── reports/              # Automated test reports (HTML format)
 │   ├── lexer/            # Lexer test reports with coverage
 │   ├── parser/           # Parser test reports with coverage
-│   └── ast/              # AST generation test reports with coverage
+│   ├── ast/              # AST generation test reports with coverage
+│   └── checker/          # Semantic checker test reports with coverage
 ├── src/                  # Source code
 │   ├── astgen/           # AST generation module
 │   │   ├── __init__.py   # Package initialization
 │   │   └── ast_generation.py # ASTGeneration class implementation
+│   ├── semantics/        # Semantic analysis module
+│   │   ├── __init__.py   # Package initialization
+│   │   ├── static_checker.py # StaticChecker class implementation
+│   │   └── static_error.py   # Semantic error definitions
 │   ├── utils/            # Utility modules
 │   │   ├── __init__.py   # Package initialization  
 │   │   ├── nodes.py      # AST node class definitions
@@ -132,6 +170,7 @@ The `ASTGeneration` class must:
 │       └── lexererr.py   # Custom lexer error classes
 └── tests/                # Comprehensive test suite
     ├── test_ast_gen.py   # AST generation tests
+    ├── test_checker.py   # Semantic analysis tests
     ├── test_lexer.py     # Lexer functionality tests
     ├── test_parser.py    # Parser functionality tests
     └── utils.py          # Testing utilities and helper classes
@@ -264,6 +303,7 @@ python3 run.py clean       # Clean build files
 - `make test-lexer` or `python run.py test-lexer` (Windows) / `python3 run.py test-lexer` (macOS/Linux) - Run lexer tests with HTML report generation
 - `make test-parser` or `python run.py test-parser` (Windows) / `python3 run.py test-parser` (macOS/Linux) - Run parser tests with HTML report generation
 - `make test-ast` or `python run.py test-ast` (Windows) / `python3 run.py test-ast` (macOS/Linux) - Run AST generation tests with HTML report generation
+- `make test-checker` or `python run.py test-checker` (Windows) / `python3 run.py test-checker` (macOS/Linux) - Run semantic checker tests with HTML report generation
 
 #### Maintenance Commands
 - `make clean` or `python run.py clean` (Windows) / `python3 run.py clean` (macOS/Linux) - Remove build directories
@@ -285,6 +325,7 @@ The project includes a comprehensive testing framework with:
 - `tests/test_lexer.py` - Lexical analysis tests
 - `tests/test_parser.py` - Syntax analysis tests
 - `tests/test_ast_gen.py` - AST generation tests
+- `tests/test_checker.py` - Semantic analysis tests
 - `tests/utils.py` - Testing utilities and helper classes
 
 ### Running Tests
@@ -317,21 +358,32 @@ python run.py test-ast
 # macOS/Linux:
 python3 run.py test-ast
 
+# Run semantic checker tests
+make test-checker
+# OR
+# Windows:
+python run.py test-checker
+# macOS/Linux:
+python3 run.py test-checker
+
 # View reports
 # Windows:
 start reports/lexer/index.html
 start reports/parser/index.html
 start reports/ast/index.html
+start reports/checker/index.html
 
 # macOS:
 open reports/lexer/index.html
 open reports/parser/index.html
 open reports/ast/index.html
+open reports/checker/index.html
 
 # Linux:
 xdg-open reports/lexer/index.html
 xdg-open reports/parser/index.html
 xdg-open reports/ast/index.html
+xdg-open reports/checker/index.html
 ```
 
 ### Test Report Features
@@ -362,7 +414,9 @@ AST Generation (ASTGeneration) ← Assignment 2
     ↓
 Abstract Syntax Tree (AST)
     ↓
-[Future: Semantic Analysis]
+Semantic Analysis (StaticChecker) ← Assignment 3
+    ↓
+Semantically Validated AST
     ↓
 [Future: Code Generation]
 ```
