@@ -980,7 +980,7 @@ arr[0] = 42;              // Array element assignment
 
 ### Variable Declaration Statements
 
-Variable declaration statements introduce new variables into the current scope with optional initialization. These statements create mutable bindings that can be reassigned later.
+Variable declaration statements introduce new variables into the current scope with initialization. These statements create mutable bindings that can be reassigned later.
 
 **Syntax:** `let identifier [: type] = expression;`
 
