@@ -46,7 +46,7 @@ def test_006():
 def test_007():
     """Test illegal escape sequence error"""
     source = '"Hello \\x World"'
-    expected = "Illegal Escape In String: Hello \\x World"
+    expected = "Illegal Escape In String: Hello \\x"
     assert Tokenizer(source).get_tokens_as_string() == expected
 
 

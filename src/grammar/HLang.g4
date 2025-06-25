@@ -24,9 +24,13 @@ options{
 	language=Python3;
 }
 
-program:  EOF;
+program: (vardecl | funcdecl)+ EOF; // write for program rule here using vardecl and funcdecl
 
-WS : [ \t\r]+ -> skip ; // skip spaces, tabs 
+vardecl: 'vardecl' ;
+
+funcdecl: 'funcdecl' ;
+
+WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs 
 
 ERROR_CHAR: .;
 ILLEGAL_ESCAPE:.;
