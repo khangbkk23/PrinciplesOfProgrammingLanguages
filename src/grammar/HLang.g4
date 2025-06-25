@@ -24,11 +24,7 @@ options{
 	language=Python3;
 }
 
-program: (vardecl | funcdecl)+ EOF; // write for program rule here using vardecl and funcdecl
-
-vardecl: 'vardecl' ;
-
-funcdecl: 'funcdecl' ;
+program: EOF; // write for program rule here using vardecl and funcdecl
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs 
 
