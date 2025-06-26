@@ -7,27 +7,76 @@ from lexererr import *
 @lexer::members {
 def emit(self):
     tk = self.type
-    if tk == self.UNCLOSE_STRING:       
-        result = super().emit();
-        raise UncloseString(result.text);
-    elif tk == self.ILLEGAL_ESCAPE:
-        result = super().emit();
-        raise IllegalEscape(result.text);
-    elif tk == self.ERROR_CHAR:
-        result = super().emit();
-        raise ErrorToken(result.text); 
-    else:
-        return super().emit();
+    result = super().emit()
+    if tk == self.ERROR_CHAR:
+        raise ErrorToken(result.text)
+    
+    return result
+
 }
+
 
 options{
 	language=Python3;
 }
 
-program: EOF; // write for program rule here using vardecl and funcdecl
+program:    decllist EOF;
 
-WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs 
+decllist:   decl decllist | decl;
 
-ERROR_CHAR: .;
-ILLEGAL_ESCAPE:.;
-UNCLOSE_STRING:.;
+decl:       vardecl | funcdecl;
+
+vardecl: typ idlist SM;
+
+funcdecl: typ ID paramdecl body;
+
+body: '{' stmtlist '}';
+
+stmtlist: stmt stmtlist |;
+
+stmt: assign | call | return | vardecl;
+
+assign: ID EQ expr SM;
+
+call:   ID '(' exprlist ')' SM;
+
+exprlist:   exprprime | ;
+
+exprprime:  expr CM exprprime | expr;
+
+return: 'return' expr SM;
+
+paramdecl: '(' paramlist ')';
+
+paramlist:  paramprime | ;
+
+paramprime: param SM paramprime | param;
+
+idlist: ID CM idlist | ID;
+
+param:  typ idlist;
+
+CM: ',';
+
+SM: ';';
+
+EQ: '=';
+
+typ: 'int' | 'float';
+
+ID: [a-zA-Z]+;
+
+expr: expr '+' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '-' expr
+    | INT_LIT
+    | call;
+
+INT_LIT:    [0-9]+;
+
+FLOAT_LIT:  INT_LIT '.' INT_LIT;
+
+WS: [ \t\r\n] -> skip ;
+
+ERROR_CHAR: . {raise ErrorToken(self.text)};

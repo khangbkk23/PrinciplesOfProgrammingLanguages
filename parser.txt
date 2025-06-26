@@ -1,0 +1,127 @@
+C1:
+program:    decllist EOF;
+decllist:   decl decllist | decl;
+decl:       vardecl | funcdecl;
+
+C2:
+program:    decllist EOF;
+
+decllist:   decl decllist | decl;
+
+decl:       vardecl | funcdecl;
+
+vardecl: typ idlist SM;
+
+funcdecl: typ ID paramdecl body;
+
+body: 'body';
+
+paramdecl: '(' paramlist ')';
+
+paramlist:  paramprime | ;
+
+paramprime: param SM paramprime | param;
+
+idlist: ID CM idlist | ID;
+
+param:  typ idlist;
+
+CM: ',';
+
+SM: ';';
+
+typ: 'int' | 'float';
+
+ID: [a-zA-Z]+;
+
+C3:
+
+program:    decllist EOF;
+
+decllist:   decl decllist | decl;
+
+decl:       vardecl | funcdecl;
+
+vardecl: typ idlist SM;
+
+funcdecl: typ ID paramdecl body;
+
+body: '{' stmtlist '}';
+
+stmtlist: stmt stmtlist |;
+
+stmt: assign | call | return | vardecl;
+
+assign: ID EQ expr SM;
+
+call:   ID '(' exprlist ')' SM;
+
+exprlist:   exprprime | ;
+
+exprprime:  expr CM exprprime | expr;
+
+return: 'return' expr SM;
+
+expr: 'expr';
+
+paramdecl: '(' paramlist ')';
+
+paramlist:  paramprime | ;
+
+paramprime: param SM paramprime | param;
+
+idlist: ID CM idlist | ID;
+
+param:  typ idlist;
+
+CM: ',';
+
+SM: ';';
+
+EQ: '=';
+
+typ: 'int' | 'float';
+
+ID: [a-zA-Z]+;
+
+C4:
+
+program: (vardecl | funcdecl)+ EOF;
+
+vardecl: typ idlist ';' ;
+
+funcdecl: typ ID paramdecl body ;
+
+paramdecl: '(' (param (';' param)*)? ')' ;
+
+param: typ idlist ;
+
+idlist: ID (',' ID)* ;
+
+typ: 'int' | 'float' ;
+
+body: '{' stmtlist '}' ;
+
+stmtlist:   (vardecl | stmt)*;
+
+stmt: assign_stmt | call_stmt | return_stmt ;
+
+assign_stmt:    ID '=' expr ';';
+
+call_stmt:      ID '(' (expr (',' expr)*)? ')' ';';
+
+return_stmt:    'return' expr ';';
+
+expr: expr '+' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '-' expr
+    | INT_LIT
+    | call_stmt;
+
+ID: [a-zA-Z]+ ;
+
+INT_LIT:    [0-9]+;
+FLOAT_LIT:  INT_LIT '.' INT_LIT;
+
+WS: [ \t\r\n] -> skip ;
