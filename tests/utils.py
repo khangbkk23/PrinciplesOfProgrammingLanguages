@@ -9,6 +9,7 @@ from build.HLangLexer import HLangLexer
 from build.HLangParser import HLangParser
 from src.astgen.ast_generation import ASTGeneration
 from src.semantics.static_checker import StaticChecker
+from src.utils.error_listener import NewErrorListener
 
 
 class Tokenizer:
@@ -51,6 +52,8 @@ class Parser:
         self.lexer = HLangLexer(self.input_stream)
         self.token_stream = CommonTokenStream(self.lexer)
         self.parser = HLangParser(self.token_stream)
+        self.parser.removeErrorListeners()
+        self.parser.addErrorListener(NewErrorListener.INSTANCE)
 
     def parse(self):
         try:
