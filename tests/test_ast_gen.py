@@ -47,7 +47,7 @@ def test_006():
             return 0;
         }
     }"""
-    expected = "Program(funcs=[FuncDecl(main, [], void, [IfStmt(BinaryOp(Identifier(x), >, IntegerLiteral(0)), else)])])"
+    expected = "Program(funcs=[FuncDecl(main, [], void, [IfStmt(condition=BinaryOp(Identifier(x), >, IntegerLiteral(0)), then_stmt=BlockStmt([ReturnStmt(Identifier(x))]), else_stmt=BlockStmt([ReturnStmt(IntegerLiteral(0))]))])])"
     assert str(ASTGenerator(source).generate()) == expected
 
 
