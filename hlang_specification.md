@@ -33,14 +33,18 @@ HLang (Hybrid Language) is a simplified programming language designed for educat
 ## Program Structure
 
 A HLang program consists of:
-1. Optional constant declarations
-2. Function declarations
+1. Optional global constant declarations (using `const` keyword)
+2. Function declarations (including user-defined functions)
 3. A mandatory `main` function as the entry point
+
+**Note:** Variable declarations (using `let` keyword) are only allowed within function bodies and cannot be declared at the global program level. Only constants can be declared globally.
 
 ### Example program structure:
 ```hlang
+// Global constant declaration (allowed at program level)
 const PI: float = 3.14159;
 
+// Function declaration
 func factorial(n: int) -> int {
     if (n <= 1) {
         return 1;
@@ -48,8 +52,12 @@ func factorial(n: int) -> int {
     return n * factorial(n - 1);
 }
 
+// Mandatory main function
 func main() -> void {
-    print("Factorial of 5 is: " + str(factorial(5)));
+    // Variable declarations are only allowed inside functions
+    let number = 5;
+    let result = factorial(number);
+    print("Factorial of " + str(number) + " is: " + str(result));
 }
 ```
 
@@ -448,13 +456,15 @@ const PRIMES = [2, 3, 5, 7, 11];      // Type inferred as [int; 5]
 ### Scope Rules and Visibility
 
 **Global Scope:**
-- Global constants declared at the program level have program-wide scope
-- Global constants are visible to all functions and can be accessed throughout the program
+- Only constant declarations (using `const`) are allowed at the global program level
+- Global constants have program-wide scope and are visible to all functions
 - Global constants must be declared before any function declarations
+- Variable declarations (using `let`) are NOT allowed at global scope
 
 **Function Scope:**
 - Function parameters have function-wide scope and are visible throughout the function body
 - Function parameters are immutable bindings (similar to constants)
+- Local variables and constants can be declared within function bodies
 
 **Block Scope:**
 - Local variables and constants declared within blocks (enclosed by `{` and `}`) have block scope
@@ -469,11 +479,13 @@ const PRIMES = [2, 3, 5, 7, 11];      // Type inferred as [int; 5]
 
 **Scope Examples:**
 ```hlang
-const GLOBAL_CONST: int = 42;  // Global scope
+// Global constants only (no global variables allowed)
+const GLOBAL_CONST: int = 42;  // Global scope - OK
+// let globalVar = 100;        // Error: variables not allowed at global scope
 
 func example() -> void {
-    let x = 10;                // Function scope
-    const LOCAL_CONST = 20;    // Function scope
+    let x = 10;                // Function scope - OK
+    const LOCAL_CONST = 20;    // Function scope - OK
     
     if (x > 5) {
         let y = 30;            // Block scope (if-block)
@@ -482,6 +494,7 @@ func example() -> void {
     }
     // Here: x = 10 (original), y is not accessible
 }
+```
 ```
 
 ---
@@ -1731,11 +1744,13 @@ let floatNum = float(floatStr);   // 3.14
 | `len` | `([T; N]) -> int` | Get the length of an array |
 
 ```hlang
-let numbers = [1, 2, 3, 4, 5];
-let arrayLength = len(numbers);   // 5
+func example() -> void {
+    let numbers = [1, 2, 3, 4, 5];
+    let arrayLength = len(numbers);   // 5
 
-let names = ["Alice", "Bob"];
-let nameCount = len(names);       // 2
+    let names = ["Alice", "Bob"];
+    let nameCount = len(names);       // 2
+}
 ```
 
 ---
