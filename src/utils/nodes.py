@@ -19,7 +19,7 @@ class ASTNode(ABC):
         self.column = None
     
     @abstractmethod
-    def accept(self, visitor: 'ASTVisitor'):
+    def accept(self, visitor: 'ASTVisitor', o: Any = None):
         """Accept a visitor for the Visitor pattern."""
         pass
     
@@ -40,8 +40,8 @@ class Program(ASTNode):
         self.const_decls = const_decls
         self.func_decls = func_decls
     
-    def accept(self, visitor):
-        return visitor.visit_program(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_program(self, o)
     
     def __str__(self):
         const_str = ', '.join(str(c) for c in self.const_decls) if self.const_decls else ""
@@ -63,8 +63,8 @@ class ConstDecl(ASTNode):
         self.type_annotation = type_annotation
         self.value = value
     
-    def accept(self, visitor):
-        return visitor.visit_const_decl(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_const_decl(self, o)
     
     def __str__(self):
         type_str = f", {self.type_annotation}" if self.type_annotation else ""
@@ -81,8 +81,8 @@ class FuncDecl(ASTNode):
         self.return_type = return_type
         self.body = body
     
-    def accept(self, visitor):
-        return visitor.visit_func_decl(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_func_decl(self, o)
     
     def __str__(self):
         params_str = ', '.join(str(p) for p in self.params) if self.params else ""
@@ -100,8 +100,8 @@ class Param(ASTNode):
         self.name = name
         self.param_type = param_type
     
-    def accept(self, visitor):
-        return visitor.visit_param(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_param(self, o)
     
     def __str__(self):
         return f"Param({self.name}, {self.param_type})"
@@ -122,8 +122,8 @@ class IntType(Type):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_int_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_int_type(self, o)
     
     def __str__(self):
         return "int"
@@ -135,8 +135,8 @@ class FloatType(Type):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_float_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_float_type(self, o)
     
     def __str__(self):
         return "float"
@@ -148,8 +148,8 @@ class BoolType(Type):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_bool_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_bool_type(self, o)
     
     def __str__(self):
         return "bool"
@@ -161,8 +161,8 @@ class StringType(Type):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_string_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_string_type(self, o)
     
     def __str__(self):
         return "string"
@@ -174,8 +174,8 @@ class VoidType(Type):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_void_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_void_type(self, o)
     
     def __str__(self):
         return "void"
@@ -189,8 +189,8 @@ class ArrayType(Type):
         self.element_type = element_type
         self.size = size
     
-    def accept(self, visitor):
-        return visitor.visit_array_type(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_array_type(self, o)
     
     def __str__(self):
         return f"[{self.element_type}; {self.size}]"
@@ -214,8 +214,8 @@ class VarDecl(Stmt):
         self.type_annotation = type_annotation
         self.value = value
     
-    def accept(self, visitor):
-        return visitor.visit_var_decl(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_var_decl(self, o)
     
     def __str__(self):
         type_str = f", {self.type_annotation}" if self.type_annotation else ""
@@ -230,8 +230,8 @@ class Assignment(Stmt):
         self.lvalue = lvalue
         self.value = value
     
-    def accept(self, visitor):
-        return visitor.visit_assignment(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_assignment(self, o)
     
     def __str__(self):
         return f"Assignment({self.lvalue}, {self.value})"
@@ -248,13 +248,16 @@ class IfStmt(Stmt):
         self.elif_branches = elif_branches  # List of (condition, block) tuples
         self.else_stmt = else_stmt
     
-    def accept(self, visitor):
-        return visitor.visit_if_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_if_stmt(self, o)
     
     def __str__(self):
-        elif_str = f", {len(self.elif_branches)}" if self.elif_branches else ""
-        else_str = ", else" if self.else_stmt else ""
-        return f"IfStmt({self.condition}{elif_str}{else_str})"
+        elif_str = ""
+        if self.elif_branches:
+            elif_parts = [f"({cond}, {block})" for cond, block in self.elif_branches]
+            elif_str = f", elif_branches=[{', '.join(elif_parts)}]"
+        else_str = f", else_stmt={self.else_stmt}" if self.else_stmt else ""
+        return f"IfStmt(condition={self.condition}, then_stmt={self.then_stmt}{elif_str}{else_str})"
 
 
 class WhileStmt(Stmt):
@@ -265,8 +268,8 @@ class WhileStmt(Stmt):
         self.condition = condition
         self.body = body
     
-    def accept(self, visitor):
-        return visitor.visit_while_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_while_stmt(self, o)
     
     def __str__(self):
         return f"WhileStmt({self.condition}, {self.body})"
@@ -281,8 +284,8 @@ class ForStmt(Stmt):
         self.iterable = iterable
         self.body = body
     
-    def accept(self, visitor):
-        return visitor.visit_for_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_for_stmt(self, o)
     
     def __str__(self):
         return f"ForStmt({self.variable}, {self.iterable}, {self.body})"
@@ -295,8 +298,8 @@ class ReturnStmt(Stmt):
         super().__init__()
         self.value = value
     
-    def accept(self, visitor):
-        return visitor.visit_return_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_return_stmt(self, o)
     
     def __str__(self):
         return f"ReturnStmt({self.value})" if self.value else "ReturnStmt()"
@@ -308,8 +311,8 @@ class BreakStmt(Stmt):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_break_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_break_stmt(self, o)
     
     def __str__(self):
         return "BreakStmt()"
@@ -321,8 +324,8 @@ class ContinueStmt(Stmt):
     def __init__(self):
         super().__init__()
     
-    def accept(self, visitor):
-        return visitor.visit_continue_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_continue_stmt(self, o)
     
     def __str__(self):
         return "ContinueStmt()"
@@ -335,8 +338,8 @@ class ExprStmt(Stmt):
         super().__init__()
         self.expr = expr
     
-    def accept(self, visitor):
-        return visitor.visit_expr_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_expr_stmt(self, o)
     
     def __str__(self):
         return f"ExprStmt({self.expr})"
@@ -349,8 +352,8 @@ class BlockStmt(Stmt):
         super().__init__()
         self.statements = statements
     
-    def accept(self, visitor):
-        return visitor.visit_block_stmt(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_block_stmt(self, o)
     
     def __str__(self):
         stmts_str = ', '.join(str(stmt) for stmt in self.statements) if self.statements else ""
@@ -374,8 +377,8 @@ class IdLValue(LValue):
         super().__init__()
         self.name = name
     
-    def accept(self, visitor):
-        return visitor.visit_id_lvalue(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_id_lvalue(self, o)
     
     def __str__(self):
         return f"IdLValue({self.name})"
@@ -389,8 +392,8 @@ class ArrayAccessLValue(LValue):
         self.array = array
         self.index = index
     
-    def accept(self, visitor):
-        return visitor.visit_array_access_lvalue(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_array_access_lvalue(self, o)
     
     def __str__(self):
         return f"ArrayAccessLValue({self.array}, {self.index})"
@@ -414,8 +417,8 @@ class BinaryOp(Expr):
         self.operator = operator  # '+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '>>'
         self.right = right
     
-    def accept(self, visitor):
-        return visitor.visit_binary_op(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_binary_op(self, o)
     
     def __str__(self):
         return f"BinaryOp({self.left}, {self.operator}, {self.right})"
@@ -429,8 +432,8 @@ class UnaryOp(Expr):
         self.operator = operator  # '+', '-', '!'
         self.operand = operand
     
-    def accept(self, visitor):
-        return visitor.visit_unary_op(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_unary_op(self, o)
     
     def __str__(self):
         return f"UnaryOp({self.operator}, {self.operand})"
@@ -444,8 +447,8 @@ class FunctionCall(Expr):
         self.function = function
         self.args = args
     
-    def accept(self, visitor):
-        return visitor.visit_function_call(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_function_call(self, o)
     
     def __str__(self):
         args_str = ', '.join(str(arg) for arg in self.args) if self.args else ""
@@ -461,8 +464,8 @@ class ArrayAccess(Expr):
         self.array = array
         self.index = index
     
-    def accept(self, visitor):
-        return visitor.visit_array_access(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_array_access(self, o)
     
     def __str__(self):
         return f"ArrayAccess({self.array}, {self.index})"
@@ -475,8 +478,8 @@ class ArrayLiteral(Expr):
         super().__init__()
         self.elements = elements
     
-    def accept(self, visitor):
-        return visitor.visit_array_literal(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_array_literal(self, o)
     
     def __str__(self):
         elements_str = ', '.join(str(elem) for elem in self.elements) if self.elements else ""
@@ -491,8 +494,8 @@ class Identifier(Expr):
         super().__init__()
         self.name = name
     
-    def accept(self, visitor):
-        return visitor.visit_identifier(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_identifier(self, o)
     
     def __str__(self):
         return f"Identifier({self.name})"
@@ -516,8 +519,8 @@ class IntegerLiteral(Literal):
     def __init__(self, value: int):
         super().__init__(value)
     
-    def accept(self, visitor):
-        return visitor.visit_integer_literal(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_integer_literal(self, o)
     
     def __str__(self):
         return f"IntegerLiteral({self.value})"
@@ -529,8 +532,8 @@ class FloatLiteral(Literal):
     def __init__(self, value: float):
         super().__init__(value)
     
-    def accept(self, visitor):
-        return visitor.visit_float_literal(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_float_literal(self, o)
     
     def __str__(self):
         return f"FloatLiteral({self.value})"
@@ -542,8 +545,8 @@ class BooleanLiteral(Literal):
     def __init__(self, value: bool):
         super().__init__(value)
     
-    def accept(self, visitor):
-        return visitor.visit_boolean_literal(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_boolean_literal(self, o)
     
     def __str__(self):
         return f"BooleanLiteral({self.value})"
@@ -555,8 +558,8 @@ class StringLiteral(Literal):
     def __init__(self, value: str):
         super().__init__(value)
     
-    def accept(self, visitor):
-        return visitor.visit_string_literal(self)
+    def accept(self, visitor, o=None):
+        return visitor.visit_string_literal(self, o)
     
     def __str__(self):
         return f'StringLiteral({self.value!r})'
