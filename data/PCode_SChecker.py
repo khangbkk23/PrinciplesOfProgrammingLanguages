@@ -125,5 +125,134 @@ class StaticCheck(Visitor):
     def visitIntLit(self,ctx:IntLit,o:object):
         pass # Ko viet
     
-C3: 
+C3:
+from functools import reduce
+class StaticCheck(Visitor):
+
+    def visitProgram(self,ctx:Program,o:object):
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [])
+
+    def visitVarDecl(self,ctx:VarDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredVariable(ctx.name)
+        o += [ctx.name]
+        return o
+
+    def visitConstDecl(self,ctx:ConstDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredConstant(ctx.name)
+        o += [ctx.name]
+        return o
+
+    def visitFuncDecl(self,ctx:FuncDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredFunction(ctx.name)
+        o += [ctx.name]
+        local_o = []
+        for param in ctx.param:
+            if param.name in local_o:
+                raise RedeclaredVariable(param.name)
+            local_o += [param.name]
+        
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.body, local_o)
+        return o
+
+    def visitIntType(self,ctx:IntType,o:object):pass
+
+    def visitFloatType(self,ctx:FloatType,o:object):pass
+
+    def visitIntLit(self,ctx:IntLit,o:object):pass
+# Immutable ways:
+from functools import reduce
+class StaticCheck(Visitor):
+
+    def visitProgram(self,ctx:Program,o:object):
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [])
+
+    def visitVarDecl(self,ctx:VarDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredVariable(ctx.name)
+        return o + [ctx.name]
+
+    def visitConstDecl(self,ctx:ConstDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredConstant(ctx.name)
+        return o +[ctx.name]
+
+    def visitFuncDecl(self,ctx:FuncDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredFunction(ctx.name)
+        o += [ctx.name]
+        local_o = []
+        for param in ctx.param:
+            if param.name in local_o:
+                raise RedeclaredVariable(param.name)
+            local_o += [param.name]
+        
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.body, local_o)
+        return o
+
+    def visitIntType(self,ctx:IntType,o:object):
+        pass
+
+    def visitFloatType(self,ctx:FloatType,o:object):
+        pass
+
+    def visitIntLit(self,ctx:IntLit,o:object):
+        pass
+C4:
+from functools import reduce
+
+class StaticCheck(Visitor):
+    def visitProgram(self,ctx:Program,o:object):
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [])
+        return
     
+    def visitVarDecl(self,ctx:VarDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredVariable(ctx.name)
+        return o + [ctx.name]
+    
+    def visitConstDecl(self,ctx:ConstDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredConstant(ctx.name)
+        return o + [ctx.name]
+    
+    def visitFuncDecl(self,ctx:FuncDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredFunction(ctx.name)
+        new_global = o + [ctx.name]
+        local_o = []
+        
+        for param in ctx.param:
+            if param.name in local_o:
+                raise RedeclaredVariable(param.name)
+            local_o += [param.name]
+        
+        local_scope = local_o[:]
+        for decl in ctx.body[0]:
+            if isinstance(decl, FuncDecl):
+                if decl.name in local_scope:
+                    raise RedeclaredFunction(decl.name)
+                local_scope += [decl.name]
+                self.visit(decl, new_global + local_scope[:-1])
+            else:
+                local_scope = self.visit(decl, local_scope)
+                
+        for expr in ctx.body[1]:
+            self.visit(expr, (local_scope, new_global))
+        return new_global
+    
+    def visitIntType(self,ctx:IntType,o:object):
+        pass
+    
+    def visitFloatType(self,ctx:FloatType,o:object):
+        pass
+    
+    def visitIntLit(self,ctx:IntLit,o:object):
+        pass
+    
+    def visitId(self,ctx:Id,o:object):
+        l, g = o
+        if ctx.name not in l and ctx.name not in g:
+            raise UndeclaredIdentifier(ctx.name)
