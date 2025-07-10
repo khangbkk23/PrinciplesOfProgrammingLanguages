@@ -90,6 +90,17 @@ def test_010():
         let result = data >> process >> validate >> transform;
         let calculation = 5 >> add(3) >> multiply(2);
     }"""
+    source = """int a, b,c;
+    float foo(int a; float c, d) {
+        int e ;
+        e = expr ;
+        c = expr ;
+        foo(expr);
+        return expr;
+    }
+    float goo (float a, b) {
+        return expr;
+    }"""
     expected = "success"
     assert Parser(source).parse() == expected
 
