@@ -173,6 +173,44 @@ class StaticCheck(Visitor):
         if ctx.name in o:
             raise RedeclaredVariable(ctx.name)
         return o + [ctx.name]
+        
+    def visitConstDecl(self,ctx:ConstDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredConstant(ctx.name)
+        return o + [ctx.name]
+
+    def visitFuncDecl(self,ctx:FuncDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredFunction(ctx.name)
+        local_o = []
+        for param in ctx.param:
+            if param.name in local_o:
+                raise RedeclaredVariable(param.name)
+            local_o += [param.name]
+        
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.body, local_o)
+        return o + [ctx.name]
+        
+
+    def visitIntType(self,ctx:IntType,o:object):
+        pass
+
+    def visitFloatType(self,ctx:FloatType,o:object):
+        pass
+
+    def visitIntLit(self,ctx:IntLit,o:object):
+        pass
+### Cach cua thay 
+from functools import reduce
+class StaticCheck(Visitor):
+
+    def visitProgram(self,ctx:Program,o:object):
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [])
+
+    def visitVarDecl(self,ctx:VarDecl,o:object):
+        if ctx.name in o:
+            raise RedeclaredVariable(ctx.name)
+        return o + [ctx.name]
 
     def visitConstDecl(self,ctx:ConstDecl,o:object):
         if ctx.name in o:
@@ -182,15 +220,8 @@ class StaticCheck(Visitor):
     def visitFuncDecl(self,ctx:FuncDecl,o:object):
         if ctx.name in o:
             raise RedeclaredFunction(ctx.name)
-        o += [ctx.name]
-        local_o = []
-        for param in ctx.param:
-            if param.name in local_o:
-                raise RedeclaredVariable(param.name)
-            local_o += [param.name]
-        
-        reduce(lambda acc, cur: self.visit(cur, acc), ctx.body, local_o)
-        return o
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.param + ctx.body, [])
+        return o + [ctx.name]
 
     def visitIntType(self,ctx:IntType,o:object):
         pass
@@ -206,7 +237,6 @@ from functools import reduce
 class StaticCheck(Visitor):
     def visitProgram(self,ctx:Program,o:object):
         reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [])
-        return
     
     def visitVarDecl(self,ctx:VarDecl,o:object):
         if ctx.name in o:
@@ -256,3 +286,11 @@ class StaticCheck(Visitor):
         l, g = o
         if ctx.name not in l and ctx.name not in g:
             raise UndeclaredIdentifier(ctx.name)
+        
+# Using stack
+# Dinh stack: moi truong tham khao cuc bo
+# Tu dinh toi day: Moi truong tham khao ko cuc bo
+# Day stack: moi truong tham khao toan cuc
+
+# Xu ly: Khai bao: so sanh voi dinh stack (MTTK cuc bo)
+# Xu ly: Su dung: kiem tra dinh -> day (co o dau thi dung o do)
