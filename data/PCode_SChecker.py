@@ -294,3 +294,41 @@ class StaticCheck(Visitor):
 
 # Xu ly: Khai bao: so sanh voi dinh stack (MTTK cuc bo)
 # Xu ly: Su dung: kiem tra dinh -> day (co o dau thi dung o do)
+from functools import reduce
+
+class StaticCheck(Visitor):
+    def visitProgram(self,ctx:Program,o:object):
+        reduce(lambda acc, cur: self.visit(cur, acc), ctx.decl, [[]])
+    
+    def visitVarDecl(self,ctx:VarDecl,o:object):
+        if ctx.name in o[0]:
+            raise RedeclaredVariable(ctx.name)
+        return [o[0] + [ctx.name]] + o[1:]
+    
+    def visitConstDecl(self,ctx:ConstDecl,o:object):
+        if ctx.name in o[0]:
+            raise RedeclaredConstant(ctx.name)
+        return [o[0] + [ctx.name]] + o[1:]
+    
+    def visitFuncDecl(self,ctx:FuncDecl,o:object):
+        if ctx.name in o[0]:
+            raise RedeclaredFunction(ctx.name)
+        new_env = [o[0] + [ctx.name]] + o[1:]
+        env = reduce(lambda acc, cur: self.visit(cur, acc), ctx.param + ctx.body[0], [[]] + new_env)
+        list(map(lambda x: self.visit(x, env), ctx.body[1]))
+        return new_env
+                    
+    def visitIntType(self,ctx:IntType,o:object):
+        pass
+    
+    def visitFloatType(self,ctx:FloatType,o:object):
+        pass
+    
+    def visitIntLit(self,ctx:IntLit,o:object):
+        pass
+    
+    def visitId(self,ctx:Id,o:object):
+        for env in o:
+            if ctx.name in env:
+                return
+        raise UndeclaredIdentifier(ctx.name)
