@@ -91,3 +91,25 @@ C6:
                 code = self.emit.emitGETSTATIC(sym.value.value + "." + sym.name, sym.mtype, o.frame)
         
         return code, sym.mtype
+
+CODE GEN 2=======================================================================================
+C1:
+    def visitVarDecl(self, ctx, o):
+        if o.frame is None:
+            # lexemes: name of attribute
+            code = self.emit.emitATTRIBUTE(ctx.name, ctx.typ, False)
+            sym = Symbol(ctx.name, ctx.typ, CName(self.className))
+        else:
+            # index: chua co => lam viec voi frame
+            idx = o.frame.getNewIndex()
+            # fromLabel:
+            fL = o.frame.getStartLabel()
+            # toLabel:
+            eL = o.frame.getEndLabel()
+            code = self.emit.emitVAR(idx, ctx.name, ctx.typ, fL, eL)
+            # Duoi day do co None nen ko la static duoc ma phai la local (dung Index)
+            sym = Symbol(ctx.name, ctx.typ, Index(idx))
+        
+        self.emit.printout(code)
+        return sym
+C2:
