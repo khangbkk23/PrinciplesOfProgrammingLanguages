@@ -113,3 +113,59 @@ C1:
         self.emit.printout(code)
         return sym
 C2:
+    def visitAssign(self, ctx, o):
+        # Can nap vao 1 doi tuong rhs hay lhs (chỉ hướng) và một lớp access để truy cập đến Expr
+        rc, rt = self.visit(ctx.rhs, Access(o.frame, o.sym, False))
+        self.emit.printout(rc)
+        lc, lt = self.visit(ctx.lhs, Access(o.frame, o.sym, True))
+        self.emit.printout(lc)
+        
+        return
+
+C3:
+    def  visitIf(self, ctx, o):
+        if ctx.estmt is None:
+            # Sinh new label
+            fL = o.frame.getNewLabel() # sinh new label
+            # SInh ma cho expr (cap tu stmt den expr -> can Access)
+            ec, et = self.visit(ctx.expr, Access(o.frame, o.sym, False)) # Đọc => isLeft = False
+            self.emit.printout(ec)
+            
+            # Nhay den fL neu False
+            code = self.emit.emitIFFALSE(fL, o.frame)
+            self.emit.printout(code)
+            
+            # Sinh ma cho stmt
+            self.visit(ctx.tstmt, o)
+            
+            # Dat label tai day
+            code = self.emit.emitLABEL(fL, o.frame)
+            self.emit.printout(code)
+        else:
+            # Sinh label moi eL, fL
+            fL = o.frame.getNewLabel()
+            eL = o.frame.getNewLabel()
+            
+            # Sinh expr
+            ec, et = self.visit(ctx.expr, Access(o.frame, o.sym, False))
+            self.emit.printout(ec)
+            
+            # Nhay den fL neu False
+            self.emit.printout(self.emit.emitIFFALSE(fL, o.frame))
+            
+            # Sinh ma cho stmt
+            self.visit(ctx.tstmt, o)
+            
+            # Nhay den eL moi TH
+            self.emit.printout(self.emit.emitGOTO(eL, o.frame))
+            
+            # Dat FL tai day
+            self.emit.printout(self.emit.emitLABEL(fL, o.frame))
+            
+            # Sinh ma estmt
+            self.visit(ctx.estmt, o)
+            
+            # Dat EL tai day
+            self.emit.printout(self.emit.emitLABEL(eL, o.frame))
+            
+            return
