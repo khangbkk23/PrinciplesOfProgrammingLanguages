@@ -1,33 +1,33 @@
-C3:
-def visitBinExpr(self, ctx, o):
-    op = ctx.op
-    e1_code, e1_type = self.visit(ctx.e1, o)
-    e2_code, e2_type = self.visit(ctx.e2, o)
+##* C3:
+    def visitBinExpr(self, ctx, o):
+        op = ctx.op
+        e1_code, e1_type = self.visit(ctx.e1, o)
+        e2_code, e2_type = self.visit(ctx.e2, o)
 
-    if op in ['+', '-', '*', '/']:
-        code = e1_code + e2_code
-        if op == '+':
-            code += self.emit.emitADDOP('+', IntType(), o.frame)
-        elif op == '-':
-            code += self.emit.emitADDOP('-', IntType(), o.frame)
-        elif op == '*':
-            code += self.emit.emitMULOP('*', IntType(), o.frame)
-        elif op == '/':
-            code += self.emit.emitMULOP('/', IntType(), o.frame)
-        return code, IntType()
-    
-    elif op in ['+.', '-.', '*.', '/.']:
-        code = e1_code + e2_code
-        if op == '+.':
-            code += self.emit.emitADDOP('+', FloatType(), o.frame)
-        elif op == '-.':
-            code += self.emit.emitADDOP('-', FloatType(), o.frame)
-        elif op == '*.':
-            code += self.emit.emitMULOP('*', FloatType(), o.frame)
-        elif op == '/.':
-            code += self.emit.emitMULOP('/', FloatType(), o.frame)
-        return code, FloatType()
-C4:
+        if op in ['+', '-', '*', '/']:
+            code = e1_code + e2_code
+            if op == '+':
+                code += self.emit.emitADDOP('+', IntType(), o.frame)
+            elif op == '-':
+                code += self.emit.emitADDOP('-', IntType(), o.frame)
+            elif op == '*':
+                code += self.emit.emitMULOP('*', IntType(), o.frame)
+            elif op == '/':
+                code += self.emit.emitMULOP('/', IntType(), o.frame)
+            return code, IntType()
+        
+        elif op in ['+.', '-.', '*.', '/.']:
+            code = e1_code + e2_code
+            if op == '+.':
+                code += self.emit.emitADDOP('+', FloatType(), o.frame)
+            elif op == '-.':
+                code += self.emit.emitADDOP('-', FloatType(), o.frame)
+            elif op == '*.':
+                code += self.emit.emitMULOP('*', FloatType(), o.frame)
+            elif op == '/.':
+                code += self.emit.emitMULOP('/', FloatType(), o.frame)
+            return code, FloatType()
+##* C4:
     def visitBinExpr(self, ctx, o):
         e1c, e1t = self.visit(ctx.e1, o)
         e2c, e2t = self.visit(ctx.e2, o)
@@ -59,7 +59,7 @@ C4:
 
         return e1c + e2c + opc, rt
 
-C5:
+##* C5:
     def visitId(self, ctx, o):
         sym = next(filter(lambda x: x.name == ctx.name, o.sym), False) # Find symbol in o.sym that has name == ctx.name
         if type(sym.value) is Index:
@@ -76,7 +76,7 @@ C5:
         
         return code, sym.mtype
 
-C6:
+##* C6:
     def visitId(self, ctx, o):
         sym = next(filter(lambda x: x.name == ctx.name, o.sym), False) # Find symbol in o.sym that has name == ctx.name
         if o.isLeft:
@@ -92,8 +92,8 @@ C6:
         
         return code, sym.mtype
 
-CODE GEN 2=======================================================================================
-C1:
+##** CODE GEN 2=======================================================================================
+##* C1:
     def visitVarDecl(self, ctx, o):
         if o.frame is None:
             # lexemes: name of attribute
@@ -112,7 +112,7 @@ C1:
         
         self.emit.printout(code)
         return sym
-C2:
+##* C2:
     def visitAssign(self, ctx, o):
         # Can nap vao 1 doi tuong rhs hay lhs (chỉ hướng) và một lớp access để truy cập đến Expr
         rc, rt = self.visit(ctx.rhs, Access(o.frame, o.sym, False))
@@ -122,7 +122,7 @@ C2:
         
         return
 
-C3:
+##* C3:
     def visitIf(self, ctx, o):
         if ctx.estmt is None:
             # Sinh new label
@@ -170,7 +170,7 @@ C3:
             
             return
 
-c4: 
+##* C4: 
     def visitWhile(self, ctx, o):
         
         o.frame.enterLoop()
@@ -199,7 +199,7 @@ c4:
         o.frame.exitLoop()
         return None
 
-c5:
+##* C5:
     def visitWhile(self, ctx, o):
         
         o.frame.enterLoop()
@@ -230,4 +230,87 @@ c5:
         
         o.frame.exitLoop()
 
-c6: For
+##* C6: For
+
+====================================CODE GEN 3=====
+##* C1: While co else
+    def visitWhile(self, ctx, o):
+        
+        o.frame.enterLoop()
+        # Sinh new label
+        contL = o.frame.getContinueLabel()
+        breakL = o.frame.getBreakLabel()
+        elseL = o.frame.getNewLabel()
+        # Dat contL
+        self.emit.printout(self.emit.emitLABEL(contL, o.frame))
+        
+        # Sinh ma cho expr
+        ec, et = self.visit(ctx.expr, Access(o.frame, o.sym, False))
+        self.emit.printout(ec)
+        
+        # Nhay den elseL neu False
+        self.emit.printout(self.emit.emitIFFALSE(elseL, o.frame))
+        
+        # Sinh ma cho stmt
+        self.visit(ctx.tstmt, o)
+        
+        # Nhay toi contL trong moi TH
+        self.emit.printout(self.emit.emitGOTO(contL, o.frame))
+        
+        # Dat elseL tai day
+        self.emit.printout(self.emit.emitLABEL(elseL, o.frame))
+        
+        # Sinh ma cho estmt
+        self.visit(ctx.estmt, o)
+        
+        # Dat breakL tai day
+        self.emit.printout(self.emit.emitLABEL(breakL, o.frame))
+        
+        o.frame.exitLoop()
+        return None
+
+##* C2: For
+    def visitFor(self, ctx, o):
+        o.frame.enterLoop()
+        
+        # Sinh label moi
+        startL = o.frame.getNewLabel()
+        contL = o.frame.getContinueLabel()
+        breakL = o.frame.getBreakLabel()
+        
+        # idx = ini, tao doi tuong bang phep gan (tu tao luon)
+        ini = Assign(ctx.idx, ctx.ini)
+        self.visit(ini, o)
+        
+        # Dat startL
+        self.emit.printout(self.emit.emitLABEL(startL, o.frame))
+    
+        # tao doi tuong cond cap EXPR
+        cond = BinExpr("<=", ctx.idx, ctx.end)
+        condc, condt = self.visit(cond, Access(o.frame, o.sym, False))
+        self.emit.printout(condc)
+        
+        # Nhay den breakL neu cond False
+        self.emit.printout(self.emit.emitIFFALSE(breakL, o.frame))
+        
+        # sinh ma cho stmt
+        self.visit(ctx.stmt, o)
+        
+        # Dat contL
+        self.emit.printout(self.emit.emitLABEL(contL, o.frame))
+    
+        # Tao doi tuong upd va gan
+        upd = BinExpr("+", ctx.idx, ctx.upd)
+        updStmt = Assign(ctx.idx, upd)
+        self.visit(updStmt, o)
+    
+        # Nhay toi startL trong moi TH
+        self.emit.printout(self.emit.emitGOTO(startL, o.frame))
+    
+        # Dat breakL
+        self.emit.printout(self.emit.emitLABEL(breakL, o.frame))
+    
+        o.frame.exitLoop()
+        return None
+
+##* For theo flowchart, giong 95% de cuoi ky harmony
