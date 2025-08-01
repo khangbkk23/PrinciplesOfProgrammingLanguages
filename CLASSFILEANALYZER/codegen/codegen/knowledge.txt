@@ -123,7 +123,7 @@ C2:
         return
 
 C3:
-    def  visitIf(self, ctx, o):
+    def visitIf(self, ctx, o):
         if ctx.estmt is None:
             # Sinh new label
             fL = o.frame.getNewLabel() # sinh new label
@@ -169,3 +169,65 @@ C3:
             self.emit.printout(self.emit.emitLABEL(eL, o.frame))
             
             return
+
+c4: 
+    def visitWhile(self, ctx, o):
+        
+        o.frame.enterLoop()
+        # Sinh new label
+        contL = o.frame.getContinueLabel()
+        breakL = o.frame.getBreakLabel()
+        # Dat contL
+        self.emit.printout(self.emit.emitLABEL(contL, o.frame))
+        
+        # Sinh ma cho expr
+        ec, et = self.visit(ctx.expr, Access(o.frame, o.sym, False))
+        self.emit.printout(ec)
+        
+        # Nhay den breakL neu False
+        self.emit.printout(self.emit.emitIFFALSE(breakL, o.frame))
+        
+        # Sinh ma cho stmt
+        self.visit(ctx.stmt, o)
+        
+        # Nhay toi contL trong moi TH
+        self.emit.printout(self.emit.emitGOTO(contL, o.frame))
+        
+        # Dat breakL tai day
+        self.emit.printout(self.emit.emitLABEL(breakL, o.frame))
+        
+        o.frame.exitLoop()
+        return None
+
+c5:
+    def visitWhile(self, ctx, o):
+        
+        o.frame.enterLoop()
+        
+        # Sinh new label
+        contL = o.frame.getContinueLabel()
+        breakL = o.frame.getBreakLabel()
+        startL = o.frame.getNewLabel()
+        
+        # Dat startL tai day
+        self.emit.printout(self.emit.emitLABEL(startL, o.frame))
+        
+        # Sinh ma cho stmt
+        self.visit(ctx.stmt, o)
+        
+        # Nhay den contL
+        self.emit.printout(self.emit.emitLABEL(contL, o.frame))
+        
+        # Sinh ma cho expr
+        ec, et = self.visit(ctx.expr, Access(o.frame, o.sym, False))
+        self.emit.printout(ec)
+        
+        # Nhay den startL neu True
+        self.emit.printout(self.emit.emitIFTRUE(startL, o.frame))
+        
+        # Dat breakL tai day
+        self.emit.printout(self.emit.emitLABEL(breakL, o.frame))
+        
+        o.frame.exitLoop()
+
+c6: For
